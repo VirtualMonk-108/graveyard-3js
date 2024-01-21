@@ -296,12 +296,44 @@ scene.add(graves)
 const graveGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.2)
 const graveMaterial = new THREE.MeshStandardMaterial({ color: '#b2b6b1' })
 
+// Load the font
+fontLoader.load('fonts/helvetiker_regular.typeface.json', (font) => {
+    // Create a text geometry
+    const graveTextGeometry = new TextGeometry('R.I.P', {
+        font: font,
+        size: 0.2,
+        height: 0.05,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.02,
+        bevelSize: 0.01,
+        bevelOffset: 0,
+        bevelSegments: 5
+    })
+
+    // Create a text material
+    const textMaterial = new THREE.MeshStandardMaterial({ color: '#ffffff' })
+
+    // Iterate through each grave
+    graves.children.forEach((grave) => {
+        // Create a text mesh
+        const textMesh = new THREE.Mesh(graveTextGeometry, textMaterial)
+
+        // Position the text mesh in the middle of the grave
+        textMesh.position.copy(grave.position)
+        textMesh.position.y += 0.4
+        textMesh.position.x -= 0.15
+
+        // Add the text mesh to the graves group
+        graves.add(textMesh)
+    })
+})
+
 for (let i = 0; i < 50; i++) {
     const angle = Math.random() * Math.PI * 2
     const radius = 3 + Math.random() * 6
     const x = Math.sin(angle) * radius
     const z = Math.cos(angle) * radius
-
     const grave = new THREE.Mesh(graveGeometry, graveMaterial)
     grave.position.set(x, 0.3, z)
     grave.rotation.y = (Math.random() - 0.5) * 0.4
@@ -326,6 +358,47 @@ const floor = new THREE.Mesh(
 floor.rotation.x = - Math.PI * 0.5
 floor.position.y = 0
 scene.add(floor)
+
+// Ghost model
+const ghost1Model = new GLTFLoader()
+ghost1Model.load(
+    '/models/ghost.glb',
+    (gltf) => {
+        const ghost = gltf.scene
+        ghost.scale.set(0.2, 0.2, 0.2)
+        ghost.position.set(0, 0.5, 0)
+        ghost1.add(ghost)
+
+        // Animate ghost1's position
+        TweenMax.to(ghost.position, 2, { x: 2, y: 0.5, z: 2, repeat: -1, yoyo: true })
+    }
+)
+
+const ghost2Model = new GLTFLoader()
+ghost2Model.load(
+    '/models/ghost.glb',
+    (gltf) => {
+        const ghost = gltf.scene
+        ghost.scale.set(0.2, 0.2, 0.2)
+        ghost.position.set(1, 1.5, 1)
+        ghost2.add(ghost)
+
+        // Animate ghost2's position
+        TweenMax.to(ghost.position, 3, { x: -2, y: 1.5, z: -2, repeat: -1, yoyo: true })
+    }
+)
+
+const brokeCoffinModel = new GLTFLoader();
+brokeCoffinModel.load(
+    '/models/broken_coffin.glb',
+    (gltf) => {
+        const brokeCoffin = gltf.scene;
+        brokeCoffin.scale.set(0.02, 0.02, 0.02);
+        brokeCoffin.position.set(6, 0, 6);
+        scene.add(brokeCoffin);
+    }
+);
+
 
 /**
  * Lights
