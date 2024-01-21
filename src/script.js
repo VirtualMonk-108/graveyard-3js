@@ -3,11 +3,14 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import GUI from 'lil-gui'
 
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
+
 /**
  * Base
  */
 // Debug
-const gui = new GUI()
+//const gui = new GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -58,19 +61,70 @@ grassNormalTexture.wrapT = THREE.RepeatWrapping
 grassRoughnessTexture.wrapT = THREE.RepeatWrapping
 
 
+const matcapTexture = textureLoader.load('/textures/matcaps/2.png')
+matcapTexture.colorSpace = THREE.SRGBColorSpace
+
+const matcapTexture2 = textureLoader.load('/textures/matcaps/2.png')
+const matcapTexture3 = textureLoader.load('/textures/matcaps/3.png')
+const matcapTexture4 = textureLoader.load('/textures/matcaps/4.png')
+const matcapTexture5 = textureLoader.load('/textures/matcaps/5.png')
+const matcapTexture6 = textureLoader.load('/textures/matcaps/6.png')
+const matcapTexture7 = textureLoader.load('/textures/matcaps/7.png')
+const matcapTexture8 = textureLoader.load('/textures/matcaps/8.png')
+
+
+/**
+ * Fonts
+ */
+const fontLoader = new FontLoader()
+
+let text;
+
+fontLoader.load(
+    '/fonts/helvetiker_regular.typeface.json',
+    (font) => {
+        const textGeometry = new TextGeometry(
+            'Beware!',
+            {
+                font: font, // font is a FontLoader instance
+                size: 1.5,
+                height: 0.5,
+                curveSegments: 5,
+                bevelEnabled: true,
+                bevelThickness: 0.03,
+                bevelSize: 0.02,
+                bevelOffset: 0,
+                bevelSegments: 4
+            }
+        );
+        textGeometry.center();
+        const textMaterial = new THREE.MeshMatcapMaterial({ matcap: matcapTexture7 });
+        text = new THREE.Mesh(textGeometry, textMaterial);
+        scene.add(text);
+
+        text.position.y = 5
+        text.position.z = 8
+        text.position.x = -0.6
+    }
+
+)
+
+
+
+
 /**
  * Perimeter walls
  */
 // perimater wall one
 const perimaterWallOne = new THREE.Mesh(
     new THREE.BoxGeometry(20, 1, 0.2),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: bricksColorTexture,
         aoMap: bricksAmbientOcclusionTexture,
         normalMap: bricksNormalTexture,
         roughnessMap: bricksRoughnessTexture
-     })
-)   
+    })
+)
 perimaterWallOne.position.y = 0.5
 perimaterWallOne.position.z = -9.5
 perimaterWallOne.position.x = 0
@@ -85,7 +139,7 @@ const wallDepth = 0.2;
 // Left side of the wall
 const leftWall = new THREE.Mesh(
     new THREE.BoxGeometry(wallWidth / 2 - 2.9, wallHeight, wallDepth),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: bricksColorTexture,
         aoMap: bricksAmbientOcclusionTexture,
         normalMap: bricksNormalTexture,
@@ -99,31 +153,31 @@ scene.add(leftWall);
 
 
 // add rusty_old_gate.glb model inbetween the two walls
-    const rustyOldGate = new GLTFLoader();
-    rustyOldGate.load(
-        '/models/rusty_old_gate.glb',
-        (gltf) => {
-            const gate = gltf.scene;
-            gate.scale.set(2, 1.5, 2); // Set the desired scale of the model
-            gate.position.y = 0; // Adjust the position of the model along the y-axis
-            gate.position.z = 8.9 // Adjust the position of the model along the z-axis
-            gate.position.x = -6.2; // Adjust the position of the model along the x-axis
-            
-            scene.add(gate); // Add the model to the scene
-        }
-    );
+const rustyOldGate = new GLTFLoader();
+rustyOldGate.load(
+    '/models/rusty_old_gate.glb',
+    (gltf) => {
+        const gate = gltf.scene;
+        gate.scale.set(2, 1.5, 2); // Set the desired scale of the model
+        gate.position.y = 0; // Adjust the position of the model along the y-axis
+        gate.position.z = 8.9 // Adjust the position of the model along the z-axis
+        gate.position.x = -6.2; // Adjust the position of the model along the x-axis
+
+        scene.add(gate); // Add the model to the scene
+    }
+);
 // add spotlight shining directly above the gate
-    const gateSpotLight = new THREE.SpotLight(0xffffff, 1, 7, Math.PI / 3, 0.25, 2);
-    gateSpotLight.position.set(-6.2, 2.5, 8.9);
-    gateSpotLight.target.position.set(-6.2, 0, 8.9);
-    scene.add(gateSpotLight, gateSpotLight.target);
+const gateSpotLight = new THREE.SpotLight(0xffffff, 1, 7, Math.PI / 3, 0.25, 2);
+gateSpotLight.position.set(-6.2, 2.5, 8.9);
+gateSpotLight.target.position.set(-6.2, 0, 8.9);
+scene.add(gateSpotLight, gateSpotLight.target);
 
 
 
 // Right side of the wall
 const rightWall = new THREE.Mesh(
     new THREE.BoxGeometry(wallWidth / 2 - 1.7, wallHeight, wallDepth),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: bricksColorTexture,
         aoMap: bricksAmbientOcclusionTexture,
         normalMap: bricksNormalTexture,
@@ -140,12 +194,12 @@ scene.add(rightWall);
 // perimater wall three
 const perimaterWallThree = new THREE.Mesh(
     new THREE.BoxGeometry(0.2, 1, 19.2),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: bricksColorTexture,
         aoMap: bricksAmbientOcclusionTexture,
         normalMap: bricksNormalTexture,
         roughnessMap: bricksRoughnessTexture
-     })
+    })
 )
 perimaterWallThree.position.y = 0.5
 perimaterWallThree.position.x = -10
@@ -154,12 +208,12 @@ scene.add(perimaterWallThree)
 // perimater wall four
 const perimaterWallFour = new THREE.Mesh(
     new THREE.BoxGeometry(0.2, 1, 19.2),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: bricksColorTexture,
         aoMap: bricksAmbientOcclusionTexture,
         normalMap: bricksNormalTexture,
         roughnessMap: bricksRoughnessTexture
-     })
+    })
 )
 perimaterWallFour.position.y = 0.5
 perimaterWallFour.position.x = 10
@@ -174,7 +228,7 @@ scene.add(house)
 // Walls
 const walls = new THREE.Mesh(
     new THREE.BoxGeometry(4, 2.5, 4),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: bricksColorTexture,
         aoMap: bricksAmbientOcclusionTexture,
         normalMap: bricksNormalTexture,
@@ -190,13 +244,13 @@ const roof = new THREE.Mesh(
     new THREE.MeshStandardMaterial({ color: '#b35f45' })
 )
 roof.rotation.y = Math.PI * 0.25
-roof.position.y = 2.5 + 0.5 
+roof.position.y = 2.5 + 0.5
 house.add(roof)
 
 // Door
 const door = new THREE.Mesh(
     new THREE.PlaneGeometry(2.2, 2.2, 100, 100),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: doorColorTexture,
         transparent: true,
         alphaMap: doorAlphaTexture,
@@ -206,7 +260,7 @@ const door = new THREE.Mesh(
         normalMap: doorNormalTexture,
         metalnessMap: doorMetalnessTexture,
         roughnessMap: doorRoughnessTexture
-     })
+    })
 )
 door.geometry.setAttribute('uv2', new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2))
 door.position.y = 1
@@ -242,9 +296,7 @@ scene.add(graves)
 const graveGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.2)
 const graveMaterial = new THREE.MeshStandardMaterial({ color: '#b2b6b1' })
 
-for(let i = 0; i < 50; i++)
-
-{
+for (let i = 0; i < 50; i++) {
     const angle = Math.random() * Math.PI * 2
     const radius = 3 + Math.random() * 6
     const x = Math.sin(angle) * radius
@@ -263,12 +315,12 @@ for(let i = 0; i < 50; i++)
 // Floor
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 19),
-    new THREE.MeshStandardMaterial({ 
+    new THREE.MeshStandardMaterial({
         map: grassColorTexture,
         aoMap: grassAmbientOcclusionTexture,
         normalMap: grassNormalTexture,
         roughnessMap: grassRoughnessTexture
-     })
+    })
 )
 
 floor.rotation.x = - Math.PI * 0.5
@@ -280,16 +332,16 @@ scene.add(floor)
  */
 // Ambient light
 const ambientLight = new THREE.AmbientLight('#b9d5ff', 0.12)
-gui.add(ambientLight, 'intensity').min(0).max(1).step(0.001)
+// gui.add(ambientLight, 'intensity').min(0).max(1).step(0.001)
 scene.add(ambientLight)
 
 // Directional light
 const moonLight = new THREE.DirectionalLight('#b9d5ff', 0.26)
 moonLight.position.set(4, 5, - 2)
-gui.add(moonLight, 'intensity').min(0).max(1).step(0.001)
-gui.add(moonLight.position, 'x').min(- 5).max(5).step(0.001)
-gui.add(moonLight.position, 'y').min(- 5).max(5).step(0.001)
-gui.add(moonLight.position, 'z').min(- 5).max(5).step(0.001)
+// gui.add(moonLight, 'intensity').min(0).max(1).step(0.001)
+// gui.add(moonLight.position, 'x').min(- 5).max(5).step(0.001)
+// gui.add(moonLight.position, 'y').min(- 5).max(5).step(0.001)
+// gui.add(moonLight.position, 'z').min(- 5).max(5).step(0.001)
 scene.add(moonLight)
 
 const doorLight = new THREE.PointLight('#ff7d46', 3, 7)
@@ -306,6 +358,9 @@ scene.add(ghost2)
 const ghost3 = new THREE.PointLight('#ffff00', 6, 3)
 scene.add(ghost3)
 
+const ghostLight = new THREE.PointLight('#FABFOC', 6, 3);
+scene.add(ghostLight);
+
 
 
 /**
@@ -316,8 +371,7 @@ const sizes = {
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -408,6 +462,10 @@ ghost3.shadow.mapSize.width = 256
 ghost3.shadow.mapSize.height = 256
 ghost3.shadow.camera.far = 7
 
+ghostLight.shadow.mapSize.width = 256
+ghostLight.shadow.mapSize.height = 256
+ghostLight.shadow.camera.far = 7
+
 
 
 
@@ -418,8 +476,7 @@ ghost3.shadow.camera.far = 7
  */
 const clock = new THREE.Clock()
 
-const tick = () =>
-{
+const tick = () => {
     const elapsedTime = clock.getElapsedTime()
 
     // Update ghosts
@@ -437,6 +494,13 @@ const tick = () =>
     ghost3.position.x = Math.cos(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.32))
     ghost3.position.z = Math.sin(ghost3Angle) * (7 + Math.sin(elapsedTime * 0.5))
     ghost3.position.y = Math.sin(elapsedTime * 4) + Math.sin(elapsedTime * 2.5)
+
+    const ghostLightAngle = - elapsedTime * 0.18
+    ghostLight.position.x = Math.cos(ghostLightAngle) * (7 + Math.sin(elapsedTime * 0.32))
+    ghostLight.position.z = Math.sin(ghostLightAngle) * (7 + Math.sin(elapsedTime * 0.5))
+    ghostLight.position.y = Math.sin(ghostLightAngle * 4) + Math.sin(elapsedTime * 2.5)
+
+
 
 
     // Update controls
