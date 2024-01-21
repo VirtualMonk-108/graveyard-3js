@@ -383,8 +383,22 @@ ghost2Model.load(
         ghost.position.set(1, 1.5, 1)
         ghost2.add(ghost)
 
-        // Animate ghost2's position
-        TweenMax.to(ghost.position, 3, { x: -2, y: 1.5, z: -2, repeat: -1, yoyo: true })
+        // Animate ghost2's positio
+        TweenMax.to(ghost.position, 5, { x: -2, y: 1.5, z: -2, repeat: -1, yoyo: false })
+    }
+)
+
+const ghost3Model = new GLTFLoader()
+ghost3Model.load(
+    '/models/ghost.glb',
+    (gltf) => {
+        const ghost = gltf.scene
+        ghost.scale.set(0.2, 0.2, 0.2)
+        ghost.position.set(1, 1.5, 1)
+        ghost3.add(ghost)
+
+        // Animate ghost2's positio
+        TweenMax.to(ghost.position, 3, { x: -2, y: 1.5, z: -2, repeat: -1, yoyo: false })
     }
 )
 
